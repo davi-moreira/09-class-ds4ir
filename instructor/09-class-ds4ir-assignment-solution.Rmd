@@ -1,0 +1,25 @@
+---
+title: "09-class-ds4ir-assignment"
+author: "seu nome aqui"
+date: "`r format(Sys.time(), '%d-%m-%Y')`"
+output: 
+  html_document:
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Assignment {-}
+
+1.
+
+2. Utilize o corpus da aprovação do impeachment da Presidenta Dilma Rousseff e utilize o 
+modelo `wordfish` para estimar o ponto ideal dos partidos com base nos pronunciamentos 
+dos seus deputados. Apresente o gráfico e seu código.
+
+3. Produza um documento .html com o resultado de sua análise.
+
+**Observação**: Não se esqueça de colocar seu nome.
