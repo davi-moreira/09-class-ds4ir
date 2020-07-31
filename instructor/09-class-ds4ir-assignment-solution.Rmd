@@ -9,16 +9,71 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+library(stringi)
+library(stringr)
+library(quanteda)
+library(quanteda.textmodels)
+library(tidyverse)
+library(here)
 ```
 
 # Assignment {-}
 
-1.
+1. Com o objeto `impeachment_dfm` criado em aula, produza uma nuvem de palavras 
+que apresente o resultado para o PT e o PSDB. Se conseguir, faça uma única nuvem
+que apresente os dois ao mesmo tempo.
+
+```{r echo = FALSE, eval = TRUE, message=FALSE, warning=FALSE}
+
+load(here("./data/impeachment-dilma-dados-filter.rda"))
+
+impeachment_dfm <- impeachment_dilma %>%
+  mutate(text = stri_trans_general(text, "Latin-ASCII")) %>%
+  mutate(text = str_remove_all(text, "[[:digit:]]")) %>%
+  corpus(docid_field = "doc_id", text_field = "text") %>% 
+  tokens(remove_punct = TRUE) %>%
+  tokens_tolower() %>%
+  tokens_remove(stopwords(source = "stopwords-iso", language = "pt"), min_nchar = 2) %>%
+  tokens_wordstem(language = "pt") %>%
+  dfm() %>%
+  dfm_select(pattern = c("sr", "total", "deput", "vot", "president", "bet", 
+                         "mansur", "palm"),  selection = "remove") %>%
+  dfm_trim(min_docfreq = 0.01, docfreq_type = "prop") %>%
+  dfm_group(groups = "partido") %>% # https://quanteda.io/reference/dfm_group.html
+  dfm_subset(partido %in% c("PT", "PSDB"))
+  
+set.seed(132)
+textplot_wordcloud(impeachment_dfm, max_words = 300, comparison = T,
+                   color = c("#4575b4", "#de2d26"))
+
+```
 
 2. Utilize o corpus da aprovação do impeachment da Presidenta Dilma Rousseff e utilize o 
 modelo `wordfish` para estimar o ponto ideal dos partidos com base nos pronunciamentos 
 dos seus deputados. Apresente o gráfico e seu código.
+
+```{r echo = FALSE, eval = TRUE, results='hide', message=FALSE, warning=FALSE}
+
+impeachment_dfm <- impeachment_dilma %>% filter(partido != "") %>%
+  mutate(text = stri_trans_general(text, "Latin-ASCII")) %>%
+  mutate(text = str_remove_all(text, "[[:digit:]]")) %>%
+  corpus(docid_field = "doc_id", text_field = "text") %>% 
+  tokens(remove_punct = TRUE) %>%
+  tokens_tolower() %>%
+  tokens_remove(stopwords(source = "stopwords-iso", language = "pt"), min_nchar = 2) %>%
+  tokens_wordstem(language = "pt") %>%
+  dfm() %>%
+  dfm_select(pattern = c("sr", "total", "deput", "vot", "president", "bet", 
+                         "mansur", "palm"),  selection = "remove") %>%
+  dfm_trim(min_docfreq = 0.01, docfreq_type = "prop") %>%
+  dfm_group(groups = "partido") #%>% # https://quanteda.io/reference/dfm_group.html
+  #dfm_subset(partido %in% c("PT", "PSDB"))
+
+set.seed(132)
+impeachment_dfm %>% textmodel_wordfish(dir = c(6,5)) %>%
+  textplot_scale1d()
+
+```
 
 3. Produza um documento .html com o resultado de sua análise.
 

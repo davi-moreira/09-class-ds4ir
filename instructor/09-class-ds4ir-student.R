@@ -560,10 +560,12 @@ rdg2017[1]
 # possível capturar seu conteúdo:```{
 #   r echo = TRUE, results = 'hide', message = FALSE, warning = FALSE
 # }
+library(tesseract)
 
 eng <- tesseract("eng")
-text <-
-  tesseract::ocr(here("data/testocr.png"), engine = eng)
+
+text <- tesseract::ocr(here("data/testocr.png"), engine = eng)
+
 cat(text)
 # ```
 # 
